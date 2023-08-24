@@ -6,18 +6,18 @@ import Solve from "./Solve";
 import init9x9Grid, { copy9x9Grid, initSudoku } from "../lib/gridGenerator";
 import analyze, { d2b } from "../lib/analyze";
 import isValid from "../lib/isValid";
+import solveSudokuByBackTracking from "../lib/backTrackingWithMRV";
 
 const Game = () => {
   const [squares, setSquares] = useState(initSudoku());
   const [solved, setSolved] = useState(false);
   const [allowed, setAllowed] = useState([]);
-  const [invalid, setInvalid] = useState(false);
   const [nextMove, setNextMove] = useState(null);
 
   // Tracking state changes
   useEffect(() => {
     console.log("changes", squares, solved, allowed)
-  }, [squares, solved, allowed])
+  }, [squares, allowed])
 
   const analyzeBoard = () => {
     const binBoard = squares.map(r => r.map(c => c ? d2b(c) : 0))
@@ -43,8 +43,13 @@ const Game = () => {
         console.log("After analysis", analysis, binBoard)
         setAllowed(analysis.allowed)
         setSolved(analysis.allowed.every(r => r.every(c => c.length === 0)))
-        if (analysis.allowed[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0].length)
+        if (analysis.allowed[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0].length === 1) {
           setNextMove({ row: analysis.bestRowIndex, col: analysis.bestColIndex, val: analysis.allowed[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0][0] })
+        } else if (analysis.allowed[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0].length > 1) {
+          let solvedSquares = solveSudokuByBackTracking(initSudoku(squares));
+          console.log("solvedSquares for allowed more than 1", solvedSquares, analysis.bestRowIndex, analysis.bestColIndex, solvedSquares[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0])
+          setNextMove({ row: analysis.bestRowIndex, col: analysis.bestColIndex, val: solvedSquares[analysis.bestRowIndex ?? 0][analysis.bestColIndex ?? 0] })
+        }
       } else {
         console.log("board is invalid")
       }
@@ -55,8 +60,9 @@ const Game = () => {
 
   // Handle Reset
   const handleReset = () => {
+    console.log("reset called")
+    console.log("initSudoku", initSudoku())
     setSquares(initSudoku());
-    setInvalid(init9x9Grid(false));
     setSolved(false);
   }
 
