@@ -36,6 +36,7 @@ const Square = (props) => {
           min={0}
           max={9}
           value={value ? value : ""}
+          autoComplete={"off"}
         ></input>
         // ) : (<input
         //   className={styles["square"] + " " + styles[props.invalid[props.rIdX][props.cIdX] ? "invalid" : undefined] + " " + styles[props.allowed.length === 1 ? "single" : (props.allowed.length === 2 ? "double" : (props.allowed.length === 3 ? "triple" : undefined))] + " " + styles[props.rIdX % 3 === 0 ? "top" : undefined] + " " + styles[props.cIdX % 3 === 0 ? "left" : undefined + " " + styles[props.rIdX % 3 === 2 ? "bottom" : undefined] + " " + styles[props.cIdX % 3 === 2 ? "right" : undefined]]}
