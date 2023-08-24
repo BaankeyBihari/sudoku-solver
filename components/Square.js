@@ -1,40 +1,57 @@
 import sanitizeInput from "../lib/sanitizeInput";
 import styles from "../styles/Game.module.scss";
+import { useEffect, useState } from "react";
+import initSudoku, { copy9x9Grid, init9x9Grid } from "../lib/gridGenerator";
 import isValid from "../lib/isValid";
-import { useState } from "react";
 
 const Square = (props) => {
-  const [invalid, setInvalid] = useState(false);
+
+  const { val: value, allowed,
+    rIdX, cIdX, updateCell, solved } = props;
+
+  // useEffect(() => {
+  //   console.log("Square rendered", props, isValid(props.squares, props.rIdX, props.cIdX, props.val))
+  // }, [props])
 
   const handleChange = (e) => {
     e.preventDefault();
-    const val = sanitizeInput(e);
-    let newSquares = props.squares;
-    let row = props.ridx;
-    let col = props.cidx;
-    if (val === -1 || !isValid(newSquares, row, col, val)) {
-      setInvalid(true);
-      props.setInvalid(true);
-    } else {
-      setInvalid(false);
-      props.setInvalid(false);
-      newSquares[props.ridx][props.cidx] = val;
-      props.setSquares([...newSquares]);
-    }
-  };
+    updateCell(sanitizeInput(e));
+    console.log("handleChange called", isValid(props.squares, rIdX, cIdX, sanitizeInput(e)))
+  }
 
   return (
     <>
-      {!props.solved ? (
+      {!solved ? (
+        // value ? (
         <input
-          className={styles["square"] + " " + styles[invalid ? "invalid" : undefined]}
-          type="text"
+          className={styles["square"] + " " + styles[!isValid(props.squares, rIdX, cIdX, props.val) ? "invalid" : undefined] + " " + styles[allowed.length === 1 ? "single" : (allowed.length === 2 ? "double" : (allowed.length === 3 ? "triple" : undefined))] + " " + styles[rIdX % 3 === 0 ? "top" : undefined] + " " + styles[cIdX % 3 === 0 ? "left" : undefined + " " + styles[rIdX % 3 === 2 ? "bottom" : undefined] + " " + styles[cIdX % 3 === 2 ? "right" : undefined]]}
+          type="number"
           id="square-val"
           name="square-val"
           maxLength="1"
           inputMode="numeric"
           onChange={(e) => handleChange(e)}
+          placeholder={props.allowed.length === 1 ? props.allowed[0] : undefined}
+          title={props.allowed.join(",")}
+          min={0}
+          max={9}
+          value={value ? value : ""}
         ></input>
+        // ) : (<input
+        //   className={styles["square"] + " " + styles[props.invalid[props.rIdX][props.cIdX] ? "invalid" : undefined] + " " + styles[props.allowed.length === 1 ? "single" : (props.allowed.length === 2 ? "double" : (props.allowed.length === 3 ? "triple" : undefined))] + " " + styles[props.rIdX % 3 === 0 ? "top" : undefined] + " " + styles[props.cIdX % 3 === 0 ? "left" : undefined + " " + styles[props.rIdX % 3 === 2 ? "bottom" : undefined] + " " + styles[props.cIdX % 3 === 2 ? "right" : undefined]]}
+        //   type="number"
+        //   id="square-val"
+        //   name="square-val"
+        //   maxLength="1"
+        //   inputMode="numeric"
+        //   onChange={(e) => handleChange(e)}
+        //   placeholder={props.allowed.length === 1 ? props.allowed[0] : undefined}
+        //   title={props.allowed.join(",")}
+        //   min={0}
+        //   max={9}
+        //   disabled={props.invalid.some((r, i) => r.some((c, j) => c && (props.rIdX !== i || props.cIdX !== j)))}
+        //   value={""}
+        // ></input>)
       ) : (
         <div className={styles.square}>{props.val}</div>
       )}
