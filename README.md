@@ -32,7 +32,7 @@ A modern, high-performance Sudoku solver built with Next.js, TypeScript, and Tai
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - Yarn package manager
 
 ### Development
@@ -52,6 +52,22 @@ yarn dev
 3. **Open your browser:**
 
 Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Code Quality
+
+```bash
+# Lint code and auto-fix issues
+yarn lint:fix
+
+# Strict linting (zero warnings)
+yarn lint:check
+
+# Type checking
+yarn type-check
+
+# Format code with Prettier
+npx prettier --write .
+```
 
 ### Production Build
 
@@ -98,7 +114,7 @@ yarn test --testTimeout=30000
 ### Advanced Solving Algorithm
 
 - **Backtracking with MCV Heuristic** - Chooses cells with minimum candidate values first
-- **Constraint Propagation** - Eliminates impossible values efficiently  
+- **Constraint Propagation** - Eliminates impossible values efficiently
 - **Hidden Singles Detection** - Finds values that can only go in one cell
 - **Early Validation** - Stops invalid branches immediately
 
@@ -145,6 +161,12 @@ The solver implements multiple sophisticated techniques:
 ## 📁 Project Structure
 
 ```txt
+├── .github/
+│   └── workflows/
+│       └── test.yml            # CI/CD pipeline configuration
+├── .husky/                     # Git hooks configuration
+│   ├── pre-commit             # Pre-commit linting and testing
+│   └── commit-msg             # Commit message validation
 ├── app/
 │   ├── layout.tsx              # Root layout with metadata
 │   ├── page.tsx                # Main Sudoku interface
@@ -158,7 +180,8 @@ The solver implements multiple sophisticated techniques:
 ├── __tests__/
 │   ├── sudokuSolver.test.ts    # Algorithm tests (49 tests)
 │   └── SudokuGrid.test.tsx     # Component tests (13 tests)
-├── coverage/                   # Test coverage reports
+├── coverage/                   # Test coverage reports (ignored)
+├── .prettierrc                 # Prettier configuration
 ├── jest.config.js              # Jest configuration
 ├── Dockerfile                  # Docker containerization
 └── package.json                # Dependencies and scripts
@@ -184,7 +207,7 @@ services:
   sudoku-solver:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
 ```
@@ -198,10 +221,39 @@ services:
 - **React Testing Library** - Component testing utilities
 - **Docker** - Containerization platform
 
+## 🔧 Development Workflow
+
+### Code Quality Tools
+
+- **ESLint** - Code linting with Next.js configuration
+- **Prettier** - Code formatting with consistent style
+- **TypeScript** - Static type checking
+- **Husky** - Git hooks for pre-commit validation
+- **lint-staged** - Run linters on staged files only
+
+### Git Hooks (Automatic)
+
+The project includes pre-commit hooks that automatically run:
+
+1. **Lint and fix** staged files
+2. **Format code** with Prettier
+3. **Type check** TypeScript
+4. **Run tests** to ensure no regressions
+
+These hooks ensure code quality and consistency across the team.
+
+### CI/CD Pipeline
+
+- **GitHub Actions** workflow runs on push/PR to main
+- **Node.js 22.x** environment
+- **Automated testing** with full coverage reporting
+- **Build verification** ensures deployability
+- **Codecov integration** for coverage tracking
+
 ## 📈 Performance Benchmarks
 
 - **Basic puzzles:** < 1ms solving time
-- **Hard puzzles:** < 10ms solving time  
+- **Hard puzzles:** < 10ms solving time
 - **Invalid puzzles:** Detected in < 1ms
 - **Memory usage:** Optimized grid cloning and conflict tracking
 - **UI responsiveness:** Real-time validation with no lag
