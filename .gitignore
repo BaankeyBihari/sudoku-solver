@@ -32,3 +32,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
+# Prettier cache
+.prettiercache
