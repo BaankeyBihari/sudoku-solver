@@ -1,0 +1,142 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":enableVulnerabilityAlertsWithLabel(security)",
+    ":semanticCommitTypeAll(chore)",
+    "group:monorepos",
+    "group:recommended",
+    "workarounds:all"
+  ],
+  "schedule": ["before 6am on saturday"],
+  "timezone": "Asia/Kolkata",
+  "labels": ["dependencies"],
+  "reviewersFromCodeOwners": true,
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on saturday"]
+  },
+  "packageRules": [
+    {
+      "groupName": "Next.js",
+      "matchPackageNames": ["next"],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "React ecosystem",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "TypeScript",
+      "matchPackageNames": ["typescript", "@types/node"],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "Testing framework",
+      "matchPackageNames": [
+        "jest",
+        "@jest/globals",
+        "@testing-library/react",
+        "@testing-library/jest-dom",
+        "@testing-library/user-event"
+      ],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "ESLint ecosystem",
+      "matchPackageNames": [
+        "eslint",
+        "@eslint/js",
+        "eslint-config-next",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser"
+      ],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "Tailwind CSS",
+      "matchPackageNames": ["tailwindcss", "postcss", "autoprefixer"],
+      "schedule": ["at any time"],
+      "automerge": false
+    },
+    {
+      "groupName": "Development tools",
+      "matchPackageNames": [
+        "husky",
+        "lint-staged",
+        "@commitlint/cli",
+        "@commitlint/config-conventional",
+        "prettier"
+      ],
+      "schedule": ["at any time"],
+      "automerge": true,
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "groupName": "Patch updates",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "groupName": "Minor updates",
+      "matchUpdateTypes": ["minor"],
+      "automerge": false,
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "groupName": "Major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "schedule": ["at any time"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "groupName": "Security updates",
+      "matchPackagePatterns": ["*"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "vulnerabilityAlerts": true,
+      "automerge": true,
+      "schedule": ["at any time"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": ["at any time"],
+    "labels": ["security", "dependencies"],
+    "automerge": true
+  },
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "🤖 Dependency Dashboard",
+  "dependencyDashboardHeader": "This issue lists Renovate updates and detected dependencies. Read the [Dependency Dashboard](https://docs.renovatebot.com/key-concepts/dashboard/) docs to learn more.\n\n- Check the box below to trigger a request for Renovate to run again on this repository",
+  "dependencyDashboardFooter": "---\n\n🤖 This dashboard is automatically updated by Renovate Bot",
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to v{{newVersion}}",
+  "prTitle": "{{commitMessagePrefix}} {{commitMessageAction}} {{commitMessageTopic}} {{commitMessageExtra}}",
+  "prBodyTemplate": "{{{header}}}{{{table}}}{{{notes}}}{{{changelogs}}}",
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/build/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/coverage/**"
+  ]
+}

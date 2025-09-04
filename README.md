@@ -2,6 +2,7 @@
 
 [![codecov](https://codecov.io/github/BaankeyBihari/sudoku-solver/branch/main/graph/badge.svg?token=68V5SFK097)](https://codecov.io/github/BaankeyBihari/sudoku-solver)
 [![Tests](https://github.com/BaankeyBihari/sudoku-solver/workflows/Run%20Tests/badge.svg)](https://github.com/BaankeyBihari/sudoku-solver/actions)
+[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://renovatebot.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15.x-black.svg)](https://nextjs.org/)
@@ -240,6 +241,7 @@ The solver implements multiple sophisticated techniques:
 ├── coverage/                   # Test coverage reports (ignored)
 ├── .prettierrc                 # Prettier configuration
 ├── jest.config.js              # Jest configuration
+├── renovate.json               # Renovate dependency update configuration
 ├── Dockerfile                  # Docker containerization
 └── package.json                # Dependencies and scripts
 ```
@@ -287,6 +289,7 @@ services:
 - **TypeScript** - Static type checking
 - **Husky** - Git hooks for pre-commit validation
 - **lint-staged** - Run linters on staged files only
+- **Renovate** - Automated dependency updates with intelligent grouping
 
 ### Git Hooks (Automatic)
 
@@ -306,6 +309,14 @@ These hooks ensure code quality and consistency across the team.
 - **Automated testing** with full coverage reporting
 - **Build verification** ensures deployability
 - **Codecov integration** for coverage tracking
+
+### Automated Dependency Management
+
+- **Renovate Bot** - Automated dependency updates scheduled for Monday mornings
+- **Intelligent Grouping** - Related packages updated together (React, Next.js, TypeScript, etc.)
+- **Security Updates** - Automatic security patches with immediate scheduling
+- **Automerge Rules** - Patch updates and dev tools auto-merged after testing
+- **Dependency Dashboard** - Centralized view of all pending updates in GitHub Issues
 
 ## 📈 Performance Benchmarks
 
