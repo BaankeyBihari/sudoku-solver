@@ -32,14 +32,12 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:ci
 
-      - name: Upload test results
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
         with:
-          name: Jest Test Results
-          path: test-results/junit.xml
-          reporter: jest-junit
-          fail-on-error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: test-results/junit.xml
 
       - name: Build application
         run: yarn build
