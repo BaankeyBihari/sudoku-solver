@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="62" failures="0" errors="0" time="0.445">
+  <testsuite name="SudokuGrid Component" errors="0" failures="0" skipped="0" timestamp="2025-09-04T16:43:47" time="0.255" tests="21">
+    <testcase classname="SudokuGrid Component renders without crashing" name="SudokuGrid Component renders without crashing" time="0.016">
+    </testcase>
+    <testcase classname="SudokuGrid Component renders grid structure correctly" name="SudokuGrid Component renders grid structure correctly" time="0.009">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles grid with values" name="SudokuGrid Component handles grid with values" time="0.007">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles possible values display" name="SudokuGrid Component handles possible values display" time="0.008">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles conflicts display" name="SudokuGrid Component handles conflicts display" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles custom mode" name="SudokuGrid Component handles custom mode" time="0.005">
+    </testcase>
+    <testcase classname="SudokuGrid Component calls onCellChange when prop exists" name="SudokuGrid Component calls onCellChange when prop exists" time="0.007">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles single possibility highlighting" name="SudokuGrid Component handles single possibility highlighting" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component handles edge cases gracefully" name="SudokuGrid Component handles edge cases gracefully" time="0.005">
+    </testcase>
+    <testcase classname="SudokuGrid Component User Input Handling handles valid number input" name="SudokuGrid Component User Input Handling handles valid number input" time="0.009">
+    </testcase>
+    <testcase classname="SudokuGrid Component User Input Handling handles clearing cell input" name="SudokuGrid Component User Input Handling handles clearing cell input" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component User Input Handling rejects invalid number input" name="SudokuGrid Component User Input Handling rejects invalid number input" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component User Input Handling handles input in non-custom mode with given values" name="SudokuGrid Component User Input Handling handles input in non-custom mode with given values" time="0.009">
+    </testcase>
+    <testcase classname="SudokuGrid Component Cell Styling and Conflicts displays conflict styling for cells with conflicts and values" name="SudokuGrid Component Cell Styling and Conflicts displays conflict styling for cells with conflicts and values" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component Cell Styling and Conflicts displays given cell styling correctly" name="SudokuGrid Component Cell Styling and Conflicts displays given cell styling correctly" time="0.005">
+    </testcase>
+    <testcase classname="SudokuGrid Component Cell Styling and Conflicts displays single possible value highlighting" name="SudokuGrid Component Cell Styling and Conflicts displays single possible value highlighting" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component Cell Styling and Conflicts displays multiple possible values correctly" name="SudokuGrid Component Cell Styling and Conflicts displays multiple possible values correctly" time="0.007">
+    </testcase>
+    <testcase classname="SudokuGrid Component Cell Styling and Conflicts handles thick borders for 3x3 box separation" name="SudokuGrid Component Cell Styling and Conflicts handles thick borders for 3x3 box separation" time="0.007">
+    </testcase>
+    <testcase classname="SudokuGrid Component Possible Values Rendering does not render possible values when showPossibleValues is false" name="SudokuGrid Component Possible Values Rendering does not render possible values when showPossibleValues is false" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component Possible Values Rendering renders single possible value with special styling" name="SudokuGrid Component Possible Values Rendering renders single possible value with special styling" time="0.006">
+    </testcase>
+    <testcase classname="SudokuGrid Component Possible Values Rendering does not render possible values for cells with values" name="SudokuGrid Component Possible Values Rendering does not render possible values for cells with values" time="0.005">
+    </testcase>
+  </testsuite>
+  <testsuite name="SudokuSolver" errors="0" failures="0" skipped="0" timestamp="2025-09-04T16:43:47" time="0.064" tests="41">
+    <testcase classname="SudokuSolver Grid Validation should validate an empty grid as valid" name="SudokuSolver Grid Validation should validate an empty grid as valid" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Validation should validate a complete valid sudoku" name="SudokuSolver Grid Validation should validate a complete valid sudoku" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Validation should detect invalid row" name="SudokuSolver Grid Validation should detect invalid row" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Validation should detect invalid column" name="SudokuSolver Grid Validation should detect invalid column" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Validation should detect invalid box" name="SudokuSolver Grid Validation should detect invalid box" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Validation should validate individual cell placement" name="SudokuSolver Grid Validation should validate individual cell placement" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Solving should solve a simple sudoku puzzle" name="SudokuSolver Grid Solving should solve a simple sudoku puzzle" time="0.005">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Solving should return false for unsolvable puzzle" name="SudokuSolver Grid Solving should return false for unsolvable puzzle" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Solving should handle empty grid" name="SudokuSolver Grid Solving should handle empty grid" time="0.007">
+    </testcase>
+    <testcase classname="SudokuSolver Possible Values Calculation should calculate possible values for empty cells" name="SudokuSolver Possible Values Calculation should calculate possible values for empty cells" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Possible Values Calculation should return empty array for filled cells" name="SudokuSolver Possible Values Calculation should return empty array for filled cells" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Possible Values Calculation should handle cell with only one possibility" name="SudokuSolver Possible Values Calculation should handle cell with only one possibility" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Possible Values Calculation should get all possible values for grid" name="SudokuSolver Possible Values Calculation should get all possible values for grid" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Conflict Detection should detect no conflicts in valid grid" name="SudokuSolver Conflict Detection should detect no conflicts in valid grid" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Conflict Detection should detect row conflicts" name="SudokuSolver Conflict Detection should detect row conflicts" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Conflict Detection should detect column conflicts" name="SudokuSolver Conflict Detection should detect column conflicts" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Conflict Detection should detect box conflicts" name="SudokuSolver Conflict Detection should detect box conflicts" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Utility Functions should correctly identify complete grid" name="SudokuSolver Utility Functions should correctly identify complete grid" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Utility Functions should correctly identify incomplete grid" name="SudokuSolver Utility Functions should correctly identify incomplete grid" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Utility Functions should clone grid correctly" name="SudokuSolver Utility Functions should clone grid correctly" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Utility Functions should check solvability correctly" name="SudokuSolver Utility Functions should check solvability correctly" time="0.002">
+    </testcase>
+    <testcase classname="SudokuSolver Utility Functions should generate sample puzzle" name="SudokuSolver Utility Functions should generate sample puzzle" time="0.002">
+    </testcase>
+    <testcase classname="SudokuSolver Edge Cases should handle grid with invalid numbers" name="SudokuSolver Edge Cases should handle grid with invalid numbers" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Edge Cases should handle negative numbers" name="SudokuSolver Edge Cases should handle negative numbers" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Edge Cases should handle very constrained but solvable puzzle" name="SudokuSolver Edge Cases should handle very constrained but solvable puzzle" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should use advanced solver with constraint propagation" name="SudokuSolver Advanced Solving Methods should use advanced solver with constraint propagation" time="0.002">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should handle invalid grid with advanced solver" name="SudokuSolver Advanced Solving Methods should handle invalid grid with advanced solver" time="0.003">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should solve puzzle with naked singles using advanced solver" name="SudokuSolver Advanced Solving Methods should solve puzzle with naked singles using advanced solver" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should detect impossible state during constraint propagation" name="SudokuSolver Advanced Solving Methods should detect impossible state during constraint propagation" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should handle grid with no empty cells in solve method" name="SudokuSolver Advanced Solving Methods should handle grid with no empty cells in solve method" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should handle impossible grid in solve method" name="SudokuSolver Advanced Solving Methods should handle impossible grid in solve method" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Advanced Solving Methods should trigger backtracking when all possibilities fail" name="SudokuSolver Advanced Solving Methods should trigger backtracking when all possibilities fail" time="0.007">
+    </testcase>
+    <testcase classname="SudokuSolver Hidden Singles Detection should find hidden singles in rows" name="SudokuSolver Hidden Singles Detection should find hidden singles in rows" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Hidden Singles Detection should find hidden singles in columns" name="SudokuSolver Hidden Singles Detection should find hidden singles in columns" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Hidden Singles Detection should find hidden singles in boxes" name="SudokuSolver Hidden Singles Detection should find hidden singles in boxes" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Hidden Singles Detection should handle no hidden singles found" name="SudokuSolver Hidden Singles Detection should handle no hidden singles found" time="0.001">
+    </testcase>
+    <testcase classname="SudokuSolver Hidden Singles Detection should find multiple hidden singles in one pass" name="SudokuSolver Hidden Singles Detection should find multiple hidden singles in one pass" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Completion Detection should correctly identify complete grid" name="SudokuSolver Grid Completion Detection should correctly identify complete grid" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Completion Detection should correctly identify incomplete grid with null values" name="SudokuSolver Grid Completion Detection should correctly identify incomplete grid with null values" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Completion Detection should correctly identify incomplete grid with zero values" name="SudokuSolver Grid Completion Detection should correctly identify incomplete grid with zero values" time="0">
+    </testcase>
+    <testcase classname="SudokuSolver Grid Completion Detection should handle mixed null and zero values" name="SudokuSolver Grid Completion Detection should handle mixed null and zero values" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>
