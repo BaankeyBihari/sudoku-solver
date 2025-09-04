@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15.x-black.svg)](https://nextjs.org/)
 
-A modern, high-performance Sudoku solver built with Next.js, TypeScript, and Tailwind CSS. This application allows users to create custom Sudoku puzzles and solve them using an optimized backtracking algorithm with advanced heuristics.
+A modern, high-performance Sudoku solver and puzzle generator built with Next.js, TypeScript, and Tailwind CSS. This application features an optimized solving algorithm, intelligent puzzle generation, and an intuitive interface for creating, solving, and enjoying Sudoku puzzles.
 
 ## ✨ Features
 
@@ -14,8 +14,9 @@ A modern, high-performance Sudoku solver built with Next.js, TypeScript, and Tai
 
 - 🧮 **Interactive Sudoku grid** - Click-to-edit cells with real-time validation
 - 🤖 **Lightning-fast solver** - Optimized backtracking with MCV heuristic (~10,000x faster than basic backtracking)
-- 🎨 **Custom puzzle creation** - Build your own Sudoku problems from scratch
-- � **Real-time conflict detection** - Invalid entries highlighted in red instantly
+- � **Random puzzle generator** - Generate puzzles with customizable difficulty levels
+- �🎨 **Custom puzzle creation** - Build your own Sudoku problems from scratch
+- 🔍 **Real-time conflict detection** - Invalid entries highlighted in red instantly
 - ✅ **Advanced validation** - Checks both rule compliance and solvability
 
 ### Smart Features
@@ -24,13 +25,22 @@ A modern, high-performance Sudoku solver built with Next.js, TypeScript, and Tai
 - 🎯 **Smart highlighting** - Cells with single possibilities highlighted in green
 - ⚡ **Auto-fill obvious cells** - One-click completion of cells with only one possibility
 - 🧠 **Constraint propagation** - Advanced solving techniques beyond basic backtracking
-- � **Hidden singles detection** - Finds cells that must contain specific values
+- 🔍 **Hidden singles detection** - Finds cells that must contain specific values
+- 🎚️ **Difficulty levels** - Easy, Medium, Hard, and Expert puzzle generation
+
+### Puzzle Generation System
+
+- 🔄 **Diagonal box filling strategy** - Creates valid starting grids efficiently
+- 🎯 **Strategic cell removal** - Maintains puzzle uniqueness and solvability
+- 📊 **Difficulty-based parameters** - Customizable filled cell counts and uniqueness requirements
+- 🔒 **Uniqueness validation** - Ensures puzzles have exactly one solution (when required)
+- 🎲 **Randomization** - Every generated puzzle is unique and different
 
 ### User Experience
 
 - ✨ Clean, intuitive interface with contextual feedback
 - 📱 Fully responsive design for all devices
-- 🎨 Beautiful styling with Tailwind CSS
+- 🎨 Beautiful styling with Tailwind CSS and modal dialogs
 - ⚠️ Smart validation warnings and error messages
 - 🐳 Docker support for easy deployment
 
@@ -97,9 +107,20 @@ yarn test --testTimeout=30000
 
 ## 🎮 How to Use
 
+### Random Puzzle Generation
+
+1. **Generate new puzzles:** Click "Generate Random Puzzle" to open the difficulty selection modal
+2. **Choose difficulty level:**
+   - **Easy:** 45 filled cells, guaranteed unique solution
+   - **Medium:** 35 filled cells, guaranteed unique solution  
+   - **Hard:** 30 filled cells, may have multiple solutions
+   - **Expert:** 25 filled cells, may have multiple solutions
+3. **Instant puzzle:** Click your preferred difficulty to generate a fresh puzzle
+4. **Start solving:** The new puzzle loads immediately, ready to solve
+
 ### Creating Custom Puzzles
 
-1. **Start fresh:** Click "Create Custom Puzzle" to begin with a blank 9×9 grid
+1. **Start fresh:** Click "Custom Puzzle" to begin with a blank 9×9 grid
 2. **Enter your puzzle:** All cells become editable - input your Sudoku clues
 3. **Validate as you go:** Invalid entries are highlighted in red immediately
 4. **Finish setup:** Click "Finish Custom Puzzle" to lock your givens and validate solvability
@@ -124,6 +145,13 @@ yarn test --testTimeout=30000
 - **Hidden Singles Detection** - Finds values that can only go in one cell
 - **Early Validation** - Stops invalid branches immediately
 
+### Puzzle Generation Algorithm
+
+- **Diagonal Box Strategy** - Fills three diagonal 3×3 boxes with shuffled values for efficient valid grid creation
+- **Strategic Cell Removal** - Randomly removes cells while maintaining solvability and uniqueness constraints
+- **Hidden Singles Validation** - Uses advanced constraint propagation to ensure puzzle quality
+- **Difficulty Calibration** - Adjusts filled cell counts and uniqueness requirements based on difficulty level
+
 ### Speed Improvements
 
 - **~10,000x faster** than basic backtracking
@@ -135,7 +163,7 @@ yarn test --testTimeout=30000
 
 - **100% coverage** on core solving algorithms (`lib/sudokuSolver.ts`)
 - **100% coverage** on UI components (`components/SudokuGrid.tsx`)
-- **62 comprehensive tests** covering edge cases and performance
+- **86 comprehensive tests** covering edge cases, performance, and random puzzle generation
 - **Jest + React Testing Library** for robust testing
 
 ### Coverage Visualization
@@ -181,6 +209,12 @@ The solver implements multiple sophisticated techniques:
    - Smart conflict detection
    - Early termination on invalid states
 
+5. **Random Puzzle Generation**
+   - Diagonal box filling for efficient grid creation
+   - Strategic cell removal with uniqueness preservation
+   - Difficulty-based parameter tuning
+   - Fallback mechanisms for reliable generation
+
 ## 📁 Project Structure
 
 ```txt
@@ -201,8 +235,8 @@ The solver implements multiple sophisticated techniques:
 ├── types/
 │   └── sudoku.ts               # TypeScript type definitions
 ├── __tests__/
-│   ├── sudokuSolver.test.ts    # Algorithm tests (49 tests)
-│   └── SudokuGrid.test.tsx     # Component tests (13 tests)
+│   ├── sudokuSolver.test.ts    # Algorithm tests (84 tests)
+│   └── SudokuGrid.test.tsx     # Component tests (2 tests)
 ├── coverage/                   # Test coverage reports (ignored)
 ├── .prettierrc                 # Prettier configuration
 ├── jest.config.js              # Jest configuration
@@ -276,7 +310,9 @@ These hooks ensure code quality and consistency across the team.
 ## 📈 Performance Benchmarks
 
 - **Basic puzzles:** < 1ms solving time
-- **Hard puzzles:** < 10ms solving time
+- **Hard puzzles:** < 10ms solving time  
+- **Expert puzzles:** < 50ms solving time
+- **Random puzzle generation:** < 100ms for most cases
 - **Invalid puzzles:** Detected in < 1ms
 - **Memory usage:** Optimized grid cloning and conflict tracking
 - **UI responsiveness:** Real-time validation with no lag

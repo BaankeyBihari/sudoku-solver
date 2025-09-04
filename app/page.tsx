@@ -23,6 +23,8 @@ export default function Home() {
   const [message, setMessage] = useState('');
   const [isValidState, setIsValidState] = useState(true);
   const [isCustomMode, setIsCustomMode] = useState(false);
+  const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Update possible values whenever the grid changes
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function Home() {
 
     // Add a small delay to show the solving state
     setTimeout(() => {
-      const solved = SudokuSolver.solve(gridToSolve);
+      const solved = SudokuSolver.solveAdvanced(gridToSolve);
       
       if (solved) {
         setGrid(gridToSolve);
@@ -196,6 +198,41 @@ export default function Home() {
     }
   };
 
+  const generateRandomPuzzle = async (difficulty: 'easy' | 'medium' | 'hard' | 'expert') => {
+    setIsGenerating(true);
+    setMessage(`Generating ${difficulty} puzzle...`);
+    setShowDifficultyModal(false);
+
+    // Add a small delay to show the generating state
+    setTimeout(() => {
+      try {
+        const newPuzzle = SudokuSolver.generatePuzzleByDifficulty(difficulty);
+        const newInitialGrid = SudokuSolver.cloneGrid(newPuzzle);
+        
+        setGrid(newPuzzle);
+        setInitialGrid(newInitialGrid);
+        setPossibleValues(SudokuSolver.getAllPossibleValues(newPuzzle));
+        setConflicts(SudokuSolver.getConflictingCells(newPuzzle));
+        setIsCustomMode(false);
+        
+        const filledCells = SudokuSolver.countFilledCells(newPuzzle);
+        setMessage(`🎯 Generated ${difficulty} puzzle with ${filledCells} clues! Good luck!`);
+      } catch (error) {
+        console.error('Failed to generate puzzle:', error);
+        setMessage('❌ Failed to generate puzzle. Using sample puzzle instead.');
+        
+        // Fallback to sample puzzle
+        const samplePuzzle = SudokuSolver.generateSamplePuzzle();
+        setGrid(samplePuzzle);
+        setInitialGrid(SudokuSolver.cloneGrid(samplePuzzle));
+        setPossibleValues(SudokuSolver.getAllPossibleValues(samplePuzzle));
+        setConflicts(SudokuSolver.getConflictingCells(samplePuzzle));
+      }
+      
+      setIsGenerating(false);
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4">
@@ -284,9 +321,21 @@ export default function Home() {
                 onClick={createBlankPuzzle}
                 className="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
               >
-                Create Custom Puzzle
+                Custom Puzzle
               </button>
             )}
+
+            <button
+              onClick={() => setShowDifficultyModal(true)}
+              disabled={isGenerating || isCustomMode}
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                isGenerating || isCustomMode
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-purple-600 hover:bg-purple-700 text-white'
+              }`}
+            >
+              {isGenerating ? 'Generating...' : '🎲 Random Puzzle'}
+            </button>
 
             <button
               onClick={clearUserEntries}
@@ -319,7 +368,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="font-medium text-gray-800 mb-2">Custom Puzzles</h3>
-                <p>Click &lsquo;Create Custom Puzzle&rsquo; to enter your own problem. All cells become editable.</p>
+                <p>Click &lsquo;Custom Puzzle&rsquo; to enter your own problem. All cells become editable.</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="font-medium text-gray-800 mb-2">Input & Editing</h3>
@@ -344,6 +393,74 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Difficulty Selection Modal */}
+        {showDifficultyModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 max-w-md w-mx-4 shadow-xl">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                Choose Difficulty Level
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-3">
+                  <button
+                    onClick={() => generateRandomPuzzle('easy')}
+                    className="px-6 py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors text-left"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg">🟢 Easy</span>
+                      <span className="text-sm opacity-90">~45 clues</span>
+                    </div>
+                    <div className="text-sm opacity-80 mt-1">Perfect for beginners</div>
+                  </button>
+
+                  <button
+                    onClick={() => generateRandomPuzzle('medium')}
+                    className="px-6 py-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors text-left"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg">🟡 Medium</span>
+                      <span className="text-sm opacity-90">~35 clues</span>
+                    </div>
+                    <div className="text-sm opacity-80 mt-1">Good challenge with logical solving</div>
+                  </button>
+
+                  <button
+                    onClick={() => generateRandomPuzzle('hard')}
+                    className="px-6 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors text-left"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg">🟠 Hard</span>
+                      <span className="text-sm opacity-90">~28 clues</span>
+                    </div>
+                    <div className="text-sm opacity-80 mt-1">Requires advanced techniques</div>
+                  </button>
+
+                  <button
+                    onClick={() => generateRandomPuzzle('expert')}
+                    className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors text-left"
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg">🔴 Expert</span>
+                      <span className="text-sm opacity-90">~22 clues</span>
+                    </div>
+                    <div className="text-sm opacity-80 mt-1">For Sudoku masters only!</div>
+                  </button>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <button
+                    onClick={() => setShowDifficultyModal(false)}
+                    className="w-full px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

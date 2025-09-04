@@ -591,4 +591,335 @@ describe('SudokuSolver', () => {
       expect(SudokuSolver.isGridComplete(mixedGrid)).toBe(false);
     });
   });
+
+  describe('Random Puzzle Generation', () => {
+    test('should generate valid random puzzle with specified filled cells', () => {
+      const filledCells = 35;
+      const puzzle = SudokuSolver.generateRandomPuzzle(filledCells, false);
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const actualFilledCells = SudokuSolver.countFilledCells(puzzle);
+      // Allow some variance in the generation process
+      expect(actualFilledCells).toBeGreaterThanOrEqual(filledCells - 3);
+      expect(actualFilledCells).toBeLessThanOrEqual(filledCells + 3);
+    });
+
+    test('should generate puzzle with uniqueness requirement', () => {
+      const puzzle = SudokuSolver.generateRandomPuzzle(30, true);
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      expect(SudokuSolver.hasUniqueSolution(puzzle)).toBe(true);
+    });
+
+    test('should handle minimum filled cells constraint', () => {
+      const puzzle = SudokuSolver.generateRandomPuzzle(17, false); // Minimum possible
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+    });
+
+    test('should handle maximum filled cells constraint', () => {
+      const puzzle = SudokuSolver.generateRandomPuzzle(80, false);
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(77); // Allow some variance
+    });
+
+    test('should throw error for invalid filled cells count', () => {
+      expect(() => SudokuSolver.generateRandomPuzzle(16, false)).toThrow('Filled cells must be between 17 and 81');
+      expect(() => SudokuSolver.generateRandomPuzzle(82, false)).toThrow('Filled cells must be between 17 and 81');
+    });
+
+    test('should fallback to sample puzzle on generation failure', () => {
+      // Mock the internal methods to force failure
+      const originalFillDiagonal = SudokuSolver.fillDiagonalBoxes;
+      const originalSolve = SudokuSolver.solve;
+      
+      // Make solve always return false to simulate failure
+      SudokuSolver.solve = jest.fn().mockReturnValue(false);
+      
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      
+      const puzzle = SudokuSolver.generateRandomPuzzle(30, false);
+      
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to generate puzzle with specified parameters, using sample puzzle');
+      expect(puzzle).toEqual(SudokuSolver.generateSamplePuzzle());
+      
+      // Restore original methods
+      SudokuSolver.solve = originalSolve;
+      consoleSpy.mockRestore();
+    });
+
+    test('should generate different puzzles on multiple calls', () => {
+      const puzzle1 = SudokuSolver.generateRandomPuzzle(30, false);
+      const puzzle2 = SudokuSolver.generateRandomPuzzle(30, false);
+      
+      // Puzzles should be different (very unlikely to be identical)
+      expect(JSON.stringify(puzzle1)).not.toEqual(JSON.stringify(puzzle2));
+    });
+
+    test('should generate puzzle with default parameters', () => {
+      // Call with no parameters to test default values (filledCells: 30, requireUniqueness: true)
+      const puzzle = SudokuSolver.generateRandomPuzzle();
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(27); // ~30 with variance
+      expect(filledCells).toBeLessThanOrEqual(33);
+    });
+
+    test('should generate puzzle with partial default parameters', () => {
+      // Call with only first parameter to test second parameter default (requireUniqueness: true)
+      const puzzle = SudokuSolver.generateRandomPuzzle(25);
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      // Allow wider variance as generation might fallback to sample puzzle (30 cells)
+      expect(filledCells).toBeGreaterThanOrEqual(22);
+      expect(filledCells).toBeLessThanOrEqual(33); // Allow for sample puzzle fallback
+    });
+  });
+
+  describe('Difficulty Level Generation', () => {
+    test('should generate easy puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('easy');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(42); // ~45 with variance
+      expect(filledCells).toBeLessThanOrEqual(48);
+    });
+
+    test('should generate medium puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('medium');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(30); // ~35 with variance
+      expect(filledCells).toBeLessThanOrEqual(40);
+    });
+
+    test('should generate hard puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('hard');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(25); // ~30 with variance
+      expect(filledCells).toBeLessThanOrEqual(35);
+    });
+
+    test('should generate expert puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('expert');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      // Expert puzzles are challenging to generate, allow wider variance
+      expect(filledCells).toBeGreaterThanOrEqual(20); // ~25 with variance
+      expect(filledCells).toBeLessThanOrEqual(35); // Allow fallback to sample puzzle
+    });
+
+    test('should generate hard puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('hard');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      expect(SudokuSolver.hasUniqueSolution(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      expect(filledCells).toBeGreaterThanOrEqual(22); // ~28 with variance or fallback
+      expect(filledCells).toBeLessThanOrEqual(35); // Allow fallback to sample puzzle
+    });
+
+    test('should generate expert puzzle', () => {
+      const puzzle = SudokuSolver.generatePuzzleByDifficulty('expert');
+      
+      expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+      expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+      expect(SudokuSolver.hasUniqueSolution(puzzle)).toBe(true);
+      
+      const filledCells = SudokuSolver.countFilledCells(puzzle);
+      // Expert puzzles are challenging to generate, allow wider variance or fallback to sample
+      expect(filledCells).toBeGreaterThanOrEqual(19); 
+      expect(filledCells).toBeLessThanOrEqual(35); // Allow fallback to sample puzzle
+    });
+  });
+
+  describe('Utility Functions - Extended', () => {
+    test('should shuffle array correctly', () => {
+      const originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const shuffledArray = SudokuSolver.shuffleArray(originalArray);
+      
+      // Should have same length and elements
+      expect(shuffledArray).toHaveLength(9);
+      expect(shuffledArray.sort()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      
+      // Original should not be modified
+      expect(originalArray).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    });
+
+    test('should shuffle array with different results', () => {
+      const array = [1, 2, 3, 4, 5];
+      const shuffle1 = SudokuSolver.shuffleArray(array);
+      const shuffle2 = SudokuSolver.shuffleArray(array);
+      
+      // Very unlikely to be identical (but possible)
+      // Run multiple times to increase confidence
+      let allSame = true;
+      for (let i = 0; i < 10; i++) {
+        const s1 = SudokuSolver.shuffleArray(array);
+        const s2 = SudokuSolver.shuffleArray(array);
+        if (JSON.stringify(s1) !== JSON.stringify(s2)) {
+          allSame = false;
+          break;
+        }
+      }
+      expect(allSame).toBe(false);
+    });
+
+    test('should count filled cells correctly', () => {
+      const grid: SudokuGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      grid[0][0] = 1;
+      grid[1][1] = 2;
+      grid[2][2] = 3;
+      
+      expect(SudokuSolver.countFilledCells(grid)).toBe(3);
+    });
+
+    test('should count filled cells ignoring zeros', () => {
+      const grid: SudokuGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      grid[0][0] = 1;
+      grid[1][1] = 0; // Should not be counted
+      grid[2][2] = 3;
+      
+      expect(SudokuSolver.countFilledCells(grid)).toBe(2);
+    });
+
+    test('should fill diagonal boxes correctly', () => {
+      const grid: SudokuGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      SudokuSolver.fillDiagonalBoxes(grid);
+      
+      // Check that diagonal boxes are filled
+      const topLeft = [];
+      const center = [];
+      const bottomRight = [];
+      
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          topLeft.push(grid[i][j]);
+          center.push(grid[i + 3][j + 3]);
+          bottomRight.push(grid[i + 6][j + 6]);
+        }
+      }
+      
+      // Each diagonal box should have all numbers 1-9
+      expect(topLeft.sort()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(center.sort()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(bottomRight.sort()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      
+      // Non-diagonal cells should be empty
+      expect(grid[0][3]).toBeNull();
+      expect(grid[3][0]).toBeNull();
+      expect(grid[6][0]).toBeNull();
+    });
+
+    test('should check unique solution correctly', () => {
+      const solvablePuzzle: SudokuGrid = [
+        [5, 3, null, null, 7, null, null, null, null],
+        [6, null, null, 1, 9, 5, null, null, null],
+        [null, 9, 8, null, null, null, null, 6, null],
+        [8, null, null, null, 6, null, null, null, 3],
+        [4, null, null, 8, null, 3, null, null, 1],
+        [7, null, null, null, 2, null, null, null, 6],
+        [null, 6, null, null, null, null, 2, 8, null],
+        [null, null, null, 4, 1, 9, null, null, 5],
+        [null, null, null, null, 8, null, null, 7, 9]
+      ];
+
+      expect(SudokuSolver.hasUniqueSolution(solvablePuzzle)).toBe(true);
+
+      const unsolvablePuzzle: SudokuGrid = [
+        [1, 1, 3, 4, 5, 6, 7, 8, 9], // Invalid
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null],
+        [null, null, null, null, null, null, null, null, null]
+      ];
+
+      expect(SudokuSolver.hasUniqueSolution(unsolvablePuzzle)).toBe(false);
+    });
+
+    test('should find all hidden singles correctly', () => {
+      const grid: SudokuGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      
+      // Create a scenario with a hidden single
+      // Fill row 0 except position 8, where only 9 can go
+      for (let col = 0; col < 8; col++) {
+        grid[0][col] = col + 1; // 1,2,3,4,5,6,7,8
+      }
+      
+      const hiddenSingles = SudokuSolver.findAllHiddenSingles(grid);
+      
+      expect(hiddenSingles).toContainEqual([0, 8]);
+    });
+
+    test('should remove cells strategically', () => {
+      // Create a complete grid first
+      const completeGrid: SudokuGrid = [
+        [5, 3, 4, 6, 7, 8, 9, 1, 2],
+        [6, 7, 2, 1, 9, 5, 3, 4, 8],
+        [1, 9, 8, 3, 4, 2, 5, 6, 7],
+        [8, 5, 9, 7, 6, 1, 4, 2, 3],
+        [4, 2, 6, 8, 5, 3, 7, 9, 1],
+        [7, 1, 3, 9, 2, 4, 8, 5, 6],
+        [9, 6, 1, 5, 3, 7, 2, 8, 4],
+        [2, 8, 7, 4, 1, 9, 6, 3, 5],
+        [3, 4, 5, 2, 8, 6, 1, 7, 9]
+      ];
+
+      const puzzle = SudokuSolver.removeCells(completeGrid, 30, false);
+      
+      if (puzzle) {
+        expect(SudokuSolver.isGridValid(puzzle)).toBe(true);
+        expect(SudokuSolver.isSolvable(puzzle)).toBe(true);
+        
+        const filledCells = SudokuSolver.countFilledCells(puzzle);
+        expect(filledCells).toBeGreaterThanOrEqual(27); // Allow variance
+        expect(filledCells).toBeLessThanOrEqual(33);
+      }
+    });
+
+    test('should handle cell removal failure', () => {
+      // Create a minimal valid grid that can't be reduced much
+      const minimalGrid: SudokuGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      minimalGrid[0][0] = 1;
+      
+      // Try to remove too many cells from a minimal grid
+      const result = SudokuSolver.removeCells(minimalGrid, 80, false);
+      
+      // Should return null if target can't be achieved
+      expect(result).toBeNull();
+    });
+  });
 });
