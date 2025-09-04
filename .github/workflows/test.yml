@@ -35,8 +35,9 @@ jobs:
     - name: Build application
       run: yarn build
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage
         fail_ci_if_error: false
