@@ -1,5 +1,11 @@
 # Sudoku Solver
 
+[![codecov](https://codecov.io/github/BaankeyBihari/sudoku-solver/branch/main/graph/badge.svg?token=68V5SFK097)](https://codecov.io/github/BaankeyBihari/sudoku-solver)
+[![Tests](https://github.com/BaankeyBihari/sudoku-solver/workflows/Run%20Tests/badge.svg)](https://github.com/BaankeyBihari/sudoku-solver/actions)
+[![Node.js](https://img.shields.io/badge/Node.js-22.x-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.x-black.svg)](https://nextjs.org/)
+
 A modern, high-performance Sudoku solver built with Next.js, TypeScript, and Tailwind CSS. This application allows users to create custom Sudoku puzzles and solve them using an optimized backtracking algorithm with advanced heuristics.
 
 ## ✨ Features
@@ -131,6 +137,23 @@ yarn test --testTimeout=30000
 - **100% coverage** on UI components (`components/SudokuGrid.tsx`)
 - **62 comprehensive tests** covering edge cases and performance
 - **Jest + React Testing Library** for robust testing
+
+### Coverage Visualization
+
+[![codecov](https://codecov.io/github/BaankeyBihari/sudoku-solver/graphs/sunburst.svg?token=68V5SFK097)](https://codecov.io/gh/BaankeyBihari/sudoku-solver)
+
+The sunburst chart above provides an interactive visualization of test coverage across the entire codebase:
+
+- **Inner ring**: Top-level directories
+- **Outer ring**: Individual files
+- **Color coding**:
+  - 🟢 **Green**: Excellent coverage (90-100%)
+  - 🟡 **Yellow**: Good coverage (70-89%)
+  - 🟠 **Orange**: Fair coverage (50-69%)
+  - 🔴 **Red**: Poor coverage (<50%)
+- **Size**: Proportional to file/directory size
+
+Click the visualization to explore coverage details interactively on Codecov!
 
 ## 🏗️ Architecture
 
