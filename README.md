@@ -112,7 +112,7 @@ yarn test --testTimeout=30000
 1. **Generate new puzzles:** Click "Generate Random Puzzle" to open the difficulty selection modal
 2. **Choose difficulty level:**
    - **Easy:** 45 filled cells, guaranteed unique solution
-   - **Medium:** 35 filled cells, guaranteed unique solution  
+   - **Medium:** 35 filled cells, guaranteed unique solution
    - **Hard:** 30 filled cells, may have multiple solutions
    - **Expert:** 25 filled cells, may have multiple solutions
 3. **Instant puzzle:** Click your preferred difficulty to generate a fresh puzzle
@@ -310,7 +310,7 @@ These hooks ensure code quality and consistency across the team.
 ## 📈 Performance Benchmarks
 
 - **Basic puzzles:** < 1ms solving time
-- **Hard puzzles:** < 10ms solving time  
+- **Hard puzzles:** < 10ms solving time
 - **Expert puzzles:** < 50ms solving time
 - **Random puzzle generation:** < 100ms for most cases
 - **Invalid puzzles:** Detected in < 1ms

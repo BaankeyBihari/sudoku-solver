@@ -6,10 +6,10 @@ import { SudokuSolver } from '@/lib/sudokuSolver';
 import { SudokuGrid, PossibleValuesGrid, ConflictsGrid } from '@/types/sudoku';
 
 export default function Home() {
-  const [grid, setGrid] = useState<SudokuGrid>(() => 
+  const [grid, setGrid] = useState<SudokuGrid>(() =>
     SudokuSolver.generateSamplePuzzle()
   );
-  const [initialGrid, setInitialGrid] = useState<SudokuGrid>(() => 
+  const [initialGrid, setInitialGrid] = useState<SudokuGrid>(() =>
     SudokuSolver.cloneGrid(SudokuSolver.generateSamplePuzzle())
   );
   const [possibleValues, setPossibleValues] = useState<PossibleValuesGrid>(() =>
@@ -31,17 +31,19 @@ export default function Home() {
     if (showPossibleValues) {
       setPossibleValues(SudokuSolver.getAllPossibleValues(grid));
     }
-    
+
     // Always check for conflicts and update the conflicts grid
     const newConflicts = SudokuSolver.getConflictingCells(grid);
     setConflicts(newConflicts);
-    
+
     // Check if the current grid state is valid
     const gridIsValid = SudokuSolver.isGridValid(grid);
     setIsValidState(gridIsValid);
-    
+
     if (!gridIsValid && message !== 'Solving...') {
-      setMessage('⚠️ Invalid puzzle state! Check for duplicate numbers in rows, columns, or boxes.');
+      setMessage(
+        '⚠️ Invalid puzzle state! Check for duplicate numbers in rows, columns, or boxes.'
+      );
     } else if (gridIsValid && message.includes('Invalid puzzle state')) {
       setMessage(''); // Clear the invalid state message when grid becomes valid again
     }
@@ -52,7 +54,7 @@ export default function Home() {
     newGrid[row][col] = value;
     setGrid(newGrid);
     setMessage('');
-    
+
     // If in custom mode, also update the initial grid to track user's problem
     if (isCustomMode) {
       const newInitialGrid = SudokuSolver.cloneGrid(initialGrid);
@@ -63,16 +65,18 @@ export default function Home() {
 
   const solvePuzzle = async () => {
     if (isSolving) return;
-    
+
     setIsSolving(true);
     setMessage('Solving...');
 
     // Create a copy to solve
     const gridToSolve = SudokuSolver.cloneGrid(grid);
-    
+
     // Validate current state
     if (!SudokuSolver.isGridValid(gridToSolve)) {
-      setMessage('Cannot solve: Invalid puzzle state. Please fix conflicts first.');
+      setMessage(
+        'Cannot solve: Invalid puzzle state. Please fix conflicts first.'
+      );
       setIsSolving(false);
       return;
     }
@@ -80,7 +84,7 @@ export default function Home() {
     // Add a small delay to show the solving state
     setTimeout(() => {
       const solved = SudokuSolver.solveAdvanced(gridToSolve);
-      
+
       if (solved) {
         setGrid(gridToSolve);
         setConflicts(SudokuSolver.getConflictingCells(gridToSolve));
@@ -88,13 +92,15 @@ export default function Home() {
       } else {
         setMessage('No solution exists for this puzzle.');
       }
-      
+
       setIsSolving(false);
     }, 100);
   };
 
   const createBlankPuzzle = () => {
-    const blankGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+    const blankGrid = Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(null));
     setGrid(blankGrid);
     setInitialGrid(blankGrid);
     setPossibleValues(SudokuSolver.getAllPossibleValues(blankGrid));
@@ -107,32 +113,40 @@ export default function Home() {
     if (isCustomMode) {
       // Validate the custom puzzle before finishing
       if (!SudokuSolver.isGridValid(grid)) {
-        setMessage('❌ Cannot finish: Puzzle has conflicts. Fix red cells first.');
+        setMessage(
+          '❌ Cannot finish: Puzzle has conflicts. Fix red cells first.'
+        );
         return;
       }
 
       const isSolvable = SudokuSolver.isSolvable(grid);
       if (!isSolvable) {
-        setMessage('⚠️ Warning: This puzzle appears to have no solution. Continue anyway?');
+        setMessage(
+          '⚠️ Warning: This puzzle appears to have no solution. Continue anyway?'
+        );
         // Still allow finishing, but warn the user
         setTimeout(() => {
           setIsCustomMode(false);
-          setMessage('Custom puzzle set with warning - it may not be solvable.');
+          setMessage(
+            'Custom puzzle set with warning - it may not be solvable.'
+          );
         }, 3000);
         return;
       }
 
       setIsCustomMode(false);
-      setMessage('✅ Custom puzzle completed and validated! Gray cells are now locked.');
+      setMessage(
+        '✅ Custom puzzle completed and validated! Gray cells are now locked.'
+      );
     }
   };
-
-
 
   const clearUserEntries = () => {
     if (isCustomMode) {
       // In custom mode, "Clear All" should create a completely blank grid
-      const blankGrid = Array(9).fill(null).map(() => Array(9).fill(null));
+      const blankGrid = Array(9)
+        .fill(null)
+        .map(() => Array(9).fill(null));
       setGrid(blankGrid);
       setInitialGrid(blankGrid);
       setPossibleValues(SudokuSolver.getAllPossibleValues(blankGrid));
@@ -151,17 +165,21 @@ export default function Home() {
   const validatePuzzle = () => {
     // Check if current state is valid
     if (!SudokuSolver.isGridValid(grid)) {
-      setMessage('❌ Puzzle state is invalid. Check for duplicates in rows, columns, or boxes.');
+      setMessage(
+        '❌ Puzzle state is invalid. Check for duplicates in rows, columns, or boxes.'
+      );
       return;
     }
 
     // Check if it's solvable
     const isSolvable = SudokuSolver.isSolvable(grid);
-    
+
     if (isSolvable) {
       setMessage('✅ Puzzle is valid and solvable!');
     } else {
-      setMessage('⚠️ Puzzle follows rules but has no solution. Check your given values.');
+      setMessage(
+        '⚠️ Puzzle follows rules but has no solution. Check your given values.'
+      );
     }
   };
 
@@ -198,7 +216,9 @@ export default function Home() {
     }
   };
 
-  const generateRandomPuzzle = async (difficulty: 'easy' | 'medium' | 'hard' | 'expert') => {
+  const generateRandomPuzzle = async (
+    difficulty: 'easy' | 'medium' | 'hard' | 'expert'
+  ) => {
     setIsGenerating(true);
     setMessage(`Generating ${difficulty} puzzle...`);
     setShowDifficultyModal(false);
@@ -208,19 +228,23 @@ export default function Home() {
       try {
         const newPuzzle = SudokuSolver.generatePuzzleByDifficulty(difficulty);
         const newInitialGrid = SudokuSolver.cloneGrid(newPuzzle);
-        
+
         setGrid(newPuzzle);
         setInitialGrid(newInitialGrid);
         setPossibleValues(SudokuSolver.getAllPossibleValues(newPuzzle));
         setConflicts(SudokuSolver.getConflictingCells(newPuzzle));
         setIsCustomMode(false);
-        
+
         const filledCells = SudokuSolver.countFilledCells(newPuzzle);
-        setMessage(`🎯 Generated ${difficulty} puzzle with ${filledCells} clues! Good luck!`);
+        setMessage(
+          `🎯 Generated ${difficulty} puzzle with ${filledCells} clues! Good luck!`
+        );
       } catch (error) {
         console.error('Failed to generate puzzle:', error);
-        setMessage('❌ Failed to generate puzzle. Using sample puzzle instead.');
-        
+        setMessage(
+          '❌ Failed to generate puzzle. Using sample puzzle instead.'
+        );
+
         // Fallback to sample puzzle
         const samplePuzzle = SudokuSolver.generateSamplePuzzle();
         setGrid(samplePuzzle);
@@ -228,7 +252,7 @@ export default function Home() {
         setPossibleValues(SudokuSolver.getAllPossibleValues(samplePuzzle));
         setConflicts(SudokuSolver.getConflictingCells(samplePuzzle));
       }
-      
+
       setIsGenerating(false);
     }, 100);
   };
@@ -288,8 +312,8 @@ export default function Home() {
                 isCustomMode
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : showPossibleValues
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                  : 'bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300'
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                    : 'bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300'
               }`}
             >
               {showPossibleValues ? 'Hide Hints' : 'Show Hints'}
@@ -346,13 +370,17 @@ export default function Home() {
           </div>
 
           {message && (
-            <div className={`text-lg font-medium ${
-              message.includes('Invalid') || message.includes('Cannot solve') || message.includes('No solution')
-                ? 'text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2'
-                : message.includes('valid') || message.includes('solved')
-                ? 'text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-2'
-                : 'text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2'
-            }`}>
+            <div
+              className={`text-lg font-medium ${
+                message.includes('Invalid') ||
+                message.includes('Cannot solve') ||
+                message.includes('No solution')
+                  ? 'text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2'
+                  : message.includes('valid') || message.includes('solved')
+                    ? 'text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-2'
+                    : 'text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2'
+              }`}
+            >
               {message}
             </div>
           )}
@@ -367,28 +395,54 @@ export default function Home() {
             <h2 className="text-2xl font-semibold text-gray-800">How to Use</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-gray-600">
               <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-800 mb-2">Custom Puzzles</h3>
-                <p>Click &lsquo;Custom Puzzle&rsquo; to enter your own problem. All cells become editable.</p>
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Custom Puzzles
+                </h3>
+                <p>
+                  Click &lsquo;Custom Puzzle&rsquo; to enter your own problem.
+                  All cells become editable.
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-800 mb-2">Input & Editing</h3>
-                <p>Click on empty cells to enter numbers 1-9. Gray cells are locked given values.</p>
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Input & Editing
+                </h3>
+                <p>
+                  Click on empty cells to enter numbers 1-9. Gray cells are
+                  locked given values.
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-800 mb-2">Conflict Detection</h3>
-                <p>Invalid entries are highlighted in red. Fix conflicts before solving the puzzle.</p>
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Conflict Detection
+                </h3>
+                <p>
+                  Invalid entries are highlighted in red. Fix conflicts before
+                  solving the puzzle.
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="font-medium text-gray-800 mb-2">Smart Hints</h3>
-                <p>Toggle &lsquo;Show Hints&rsquo; to see possible values for empty cells as small numbers.</p>
+                <p>
+                  Toggle &lsquo;Show Hints&rsquo; to see possible values for
+                  empty cells as small numbers.
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="font-medium text-gray-800 mb-2">Enhanced Validation</h3>
-                <p>Validate checks both rule compliance and solvability to ensure puzzle quality.</p>
+                <h3 className="font-medium text-gray-800 mb-2">
+                  Enhanced Validation
+                </h3>
+                <p>
+                  Validate checks both rule compliance and solvability to ensure
+                  puzzle quality.
+                </p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="font-medium text-gray-800 mb-2">Auto-Fill</h3>
-                <p>Green cells have one solution. Use &lsquo;Fill Obvious&rsquo; to auto-complete them.</p>
+                <p>
+                  Green cells have one solution. Use &lsquo;Fill Obvious&rsquo;
+                  to auto-complete them.
+                </p>
               </div>
             </div>
           </div>
@@ -401,7 +455,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                 Choose Difficulty Level
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-3">
                   <button
@@ -412,7 +466,9 @@ export default function Home() {
                       <span className="text-lg">🟢 Easy</span>
                       <span className="text-sm opacity-90">~45 clues</span>
                     </div>
-                    <div className="text-sm opacity-80 mt-1">Perfect for beginners</div>
+                    <div className="text-sm opacity-80 mt-1">
+                      Perfect for beginners
+                    </div>
                   </button>
 
                   <button
@@ -423,7 +479,9 @@ export default function Home() {
                       <span className="text-lg">🟡 Medium</span>
                       <span className="text-sm opacity-90">~35 clues</span>
                     </div>
-                    <div className="text-sm opacity-80 mt-1">Good challenge with logical solving</div>
+                    <div className="text-sm opacity-80 mt-1">
+                      Good challenge with logical solving
+                    </div>
                   </button>
 
                   <button
@@ -434,7 +492,9 @@ export default function Home() {
                       <span className="text-lg">🟠 Hard</span>
                       <span className="text-sm opacity-90">~28 clues</span>
                     </div>
-                    <div className="text-sm opacity-80 mt-1">Requires advanced techniques</div>
+                    <div className="text-sm opacity-80 mt-1">
+                      Requires advanced techniques
+                    </div>
                   </button>
 
                   <button
@@ -445,7 +505,9 @@ export default function Home() {
                       <span className="text-lg">🔴 Expert</span>
                       <span className="text-sm opacity-90">~22 clues</span>
                     </div>
-                    <div className="text-sm opacity-80 mt-1">For Sudoku masters only!</div>
+                    <div className="text-sm opacity-80 mt-1">
+                      For Sudoku masters only!
+                    </div>
                   </button>
                 </div>
 
