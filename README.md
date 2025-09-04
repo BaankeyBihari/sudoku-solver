@@ -235,6 +235,12 @@ The solver implements multiple sophisticated techniques:
 │   └── sudokuSolver.ts         # Optimized solving algorithms
 ├── types/
 │   └── sudoku.ts               # TypeScript type definitions
+├── public/                     # Static assets and favicons
+│   ├── favicon.svg             # Main SVG favicon based on actual Sudoku grid
+│   ├── favicon-16x16.svg       # Small size optimized favicon
+│   ├── apple-touch-icon.svg    # iOS/macOS touch icon
+│   ├── site.webmanifest        # Web app manifest for PWA support
+│   └── browserconfig.xml       # Windows tile configuration
 ├── __tests__/
 │   ├── sudokuSolver.test.ts    # Algorithm tests (84 tests)
 │   └── SudokuGrid.test.tsx     # Component tests (2 tests)
