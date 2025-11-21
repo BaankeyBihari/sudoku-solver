@@ -10,6 +10,8 @@ interface SudokuCellProps {
   possibleValues: number[] | null;
   showPossibleValues: boolean;
   hasConflict: boolean;
+  isSelected: boolean;
+  onSelect: () => void;
 }
 
 const SudokuCell: React.FC<SudokuCellProps> = ({
@@ -21,6 +23,8 @@ const SudokuCell: React.FC<SudokuCellProps> = ({
   possibleValues,
   showPossibleValues,
   hasConflict,
+  isSelected,
+  onSelect,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -35,21 +39,27 @@ const SudokuCell: React.FC<SudokuCellProps> = ({
   };
 
   const getCellClasses = () => {
-    let classes = 'relative w-12 h-12 text-center border border-gray-400 font-medium ';
+    let classes = 'relative w-12 h-12 text-center border border-gray-400 dark:border-gray-600 font-medium transition-all duration-200 focus:outline-none ';
     
     // Add thick borders for 3x3 box separation
-    if (row % 3 === 0 && row !== 0) classes += 'border-t-2 border-t-black ';
-    if (col % 3 === 0 && col !== 0) classes += 'border-l-2 border-l-black ';
-    if (row === 8) classes += 'border-b-2 border-b-black ';
-    if (col === 8) classes += 'border-r-2 border-r-black ';
+    if (row % 3 === 0 && row !== 0) classes += 'border-t-2 border-t-black dark:border-t-white ';
+    if (col % 3 === 0 && col !== 0) classes += 'border-l-2 border-l-black dark:border-l-white ';
+    if (row === 8) classes += 'border-b-2 border-b-black dark:border-b-white ';
+    if (col === 8) classes += 'border-r-2 border-r-black dark:border-r-white ';
+    
+    // Selection ring
+    if (isSelected && !isGiven) {
+      classes += 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 ';
+    }
     
     // Style for given vs user-entered cells
     if (isGiven) {
-      classes += 'bg-gray-200 font-bold text-black text-lg ';
+      classes += 'bg-gray-200 dark:bg-gray-700 font-bold text-black dark:text-white text-lg cursor-not-allowed ';
     } else {
+      classes += 'cursor-pointer ';
       // Check for conflicts first (highest priority)
       if (hasConflict && value !== null) {
-        classes += 'bg-red-100 border-red-400 text-red-800 text-lg font-semibold ';
+        classes += 'bg-red-100 dark:bg-red-900/40 border-red-400 dark:border-red-500 text-red-800 dark:text-red-300 text-lg font-semibold animate-shake ';
       } else {
         // Check if this cell has only one possible value and should be highlighted
         const hasOnePossibleValue = showPossibleValues && 
@@ -58,10 +68,14 @@ const SudokuCell: React.FC<SudokuCellProps> = ({
                                     value === null;
         
         if (hasOnePossibleValue) {
-          classes += 'bg-green-100 border-green-300 text-blue-600 text-lg ';
+          classes += 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-600 text-blue-600 dark:text-blue-300 text-lg animate-glow ';
         } else {
-          classes += 'bg-white text-blue-600 text-lg ';
+          classes += 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-300 text-lg ';
         }
+      }
+      // Fade in animation for newly entered values
+      if (value !== null) {
+        classes += 'animate-fadeIn ';
       }
     }
     
@@ -106,9 +120,11 @@ const SudokuCell: React.FC<SudokuCellProps> = ({
         type="text"
         value={value || ''}
         onChange={handleChange}
+        onClick={onSelect}
         disabled={isGiven}
         maxLength={1}
         className={getCellClasses()}
+        readOnly={isGiven}
       />
       {renderPossibleValues()}
     </div>
@@ -123,6 +139,8 @@ interface SudokuGridComponentProps {
   showPossibleValues: boolean;
   isCustomMode: boolean;
   onCellChange: (row: number, col: number, value: number | null) => void;
+  selectedCell: { row: number; col: number } | null;
+  onCellSelect: (row: number, col: number) => void;
 }
 
 const SudokuGridComponent: React.FC<SudokuGridComponentProps> = ({
@@ -133,9 +151,11 @@ const SudokuGridComponent: React.FC<SudokuGridComponentProps> = ({
   showPossibleValues,
   isCustomMode,
   onCellChange,
+  selectedCell,
+  onCellSelect,
 }) => {
   return (
-    <div className="inline-block border-2 border-black bg-black p-1">
+    <div className="inline-block border-2 border-black dark:border-white bg-black dark:bg-white p-1">
       <div className="grid grid-cols-9 gap-px">
         {grid.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
@@ -149,6 +169,8 @@ const SudokuGridComponent: React.FC<SudokuGridComponentProps> = ({
               possibleValues={possibleValues[rowIndex][colIndex]}
               showPossibleValues={showPossibleValues}
               hasConflict={conflicts[rowIndex][colIndex]}
+              isSelected={selectedCell !== null && selectedCell.row === rowIndex && selectedCell.col === colIndex}
+              onSelect={() => onCellSelect(rowIndex, colIndex)}
             />
           ))
         )}

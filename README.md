@@ -37,12 +37,22 @@ A modern, high-performance Sudoku solver and puzzle generator built with Next.js
 - 🔒 **Uniqueness validation** - Ensures puzzles have exactly one solution (when required)
 - 🎲 **Randomization** - Every generated puzzle is unique and different
 
+### Engagement Features ✨
+
+- ⏱️ **Timer & Solve Tracking** - Track your solve time with personal best records for each difficulty
+- 🌙 **Dark Mode** - Eye-friendly dark theme with smooth transitions and localStorage persistence
+- 💾 **Auto-save** - Never lose progress! Puzzles automatically save and restore on page refresh
+- 🎊 **Smooth Animations** - Confetti celebration on completion, conflict shake, hint glow effects
+- ⌨️ **Keyboard Shortcuts** - Navigate with arrow keys, input with number keys, clear with backspace
+
 ### User Experience
 
 - ✨ Clean, intuitive interface with contextual feedback
 - 📱 Fully responsive design for all devices
 - 🎨 Beautiful styling with Tailwind CSS and modal dialogs
+- 🌗 Light/Dark theme toggle with system preference detection
 - ⚠️ Smart validation warnings and error messages
+- 💡 Keyboard shortcuts hint displayed in header
 - 🐳 Docker support for easy deployment
 
 ## Getting Started
@@ -137,6 +147,19 @@ yarn test --testTimeout=30000
 6. **Solve instantly:** Click "Solve Puzzle" for automatic completion
 7. **Start over:** Use "Clear Entries" to reset your progress
 
+### Keyboard Shortcuts ⌨️
+
+Efficiently navigate and solve puzzles using keyboard controls:
+
+| Shortcut | Action |
+|----------|--------|
+| **Arrow Keys** (↑↓←→) | Navigate between cells |
+| **1-9** | Enter number in selected cell |
+| **Backspace/Delete** | Clear selected cell |
+| **Escape** | Deselect current cell |
+
+> **Tip:** Click any cell to select it, then use keyboard shortcuts for faster solving!
+
 ## 🚀 Performance Optimizations
 
 ### Advanced Solving Algorithm
@@ -162,10 +185,19 @@ yarn test --testTimeout=30000
 
 ## 📊 Test Coverage
 
+- **94.44% overall coverage** across the entire codebase
 - **100% coverage** on core solving algorithms (`lib/sudokuSolver.ts`)
-- **100% coverage** on UI components (`components/SudokuGrid.tsx`)
-- **86 comprehensive tests** covering edge cases, performance, and random puzzle generation
+- **100% coverage** on theme toggle component (`components/ThemeToggle.tsx`)
+- **95%+ coverage** on UI components (`components/SudokuGrid.tsx`)
+- **127 comprehensive tests** covering algorithms, UI, storage, and edge cases
 - **Jest + React Testing Library** for robust testing
+
+### Test Suites
+
+- **SudokuSolver** (66 tests) - Core algorithm testing
+- **Storage** (22 tests) - LocalStorage utilities
+- **SudokuGrid** (20 tests) - UI component testing
+- **ThemeToggle** (19 tests) - Dark mode functionality
 
 ### Coverage Visualization
 
@@ -226,13 +258,15 @@ The solver implements multiple sophisticated techniques:
 │   ├── pre-commit             # Pre-commit linting and testing
 │   └── commit-msg             # Commit message validation
 ├── app/
-│   ├── layout.tsx              # Root layout with metadata
-│   ├── page.tsx                # Main Sudoku interface
+│   ├── layout.tsx              # Root layout with metadata & theme detection
+│   ├── page.tsx                # Main Sudoku interface with timer & keyboard shortcuts
 │   └── globals.css             # Global styles and utilities
 ├── components/
-│   └── SudokuGrid.tsx          # Interactive grid component
+│   ├── SudokuGrid.tsx          # Interactive grid component with animations
+│   └── ThemeToggle.tsx         # Dark mode toggle button
 ├── lib/
-│   └── sudokuSolver.ts         # Optimized solving algorithms
+│   ├── sudokuSolver.ts         # Optimized solving algorithms
+│   └── storage.ts              # localStorage utilities for state & preferences
 ├── types/
 │   └── sudoku.ts               # TypeScript type definitions
 ├── public/                     # Static assets and favicons
@@ -242,8 +276,10 @@ The solver implements multiple sophisticated techniques:
 │   ├── site.webmanifest        # Web app manifest for PWA support
 │   └── browserconfig.xml       # Windows tile configuration
 ├── __tests__/
-│   ├── sudokuSolver.test.ts    # Algorithm tests (84 tests)
-│   └── SudokuGrid.test.tsx     # Component tests (2 tests)
+│   ├── sudokuSolver.test.ts    # Algorithm tests (66 tests)
+│   ├── SudokuGrid.test.tsx     # Component tests (20 tests)
+│   ├── ThemeToggle.test.tsx    # Dark mode tests (19 tests)
+│   └── storage.test.ts         # Storage utility tests (22 tests)
 ├── coverage/                   # Test coverage reports (ignored)
 ├── .prettierrc                 # Prettier configuration
 ├── jest.config.js              # Jest configuration
@@ -277,14 +313,31 @@ services:
       - NODE_ENV=production
 ```
 
-## 🛠️ Technology Stack
+### Tech Stack
 
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling
-- **Jest** - Testing framework with coverage
-- **React Testing Library** - Component testing utilities
-- **Docker** - Containerization platform
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript 5 with strict mode
+- **UI Library:** React 19
+- **Styling:** Tailwind CSS 3
+- **Testing:** Jest + React Testing Library
+- **Code Quality:** ESLint, Prettier, Husky
+- **CI/CD:** GitHub Actions with Codecov integration
+
+### Dependencies
+
+**Core Libraries:**
+- `next` - React framework with server components
+- `react` & `react-dom` - UI library
+- `typescript` - Type-safe development
+- `tailwindcss` - Utility-first CSS
+
+**UI Enhancements:**
+- `canvas-confetti` - Celebration animations on puzzle completion
+
+**Development Tools:**
+- `jest` & `@testing-library/react` - Testing framework
+- `eslint` & `prettier` - Code linting and formatting
+- `husky` & `lint-staged` - Pre-commit hooks
 
 ## 🔧 Development Workflow
 

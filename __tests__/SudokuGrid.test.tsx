@@ -17,6 +17,8 @@ describe('SudokuGrid Component', () => {
     showPossibleValues: false,
     isCustomMode: false,
     onCellChange: jest.fn(),
+    selectedCell: null,
+    onCellSelect: jest.fn(),
   };
 
   beforeEach(() => {

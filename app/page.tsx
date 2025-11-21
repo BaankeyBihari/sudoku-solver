@@ -1,9 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import confetti from 'canvas-confetti';
 import SudokuGridComponent from '@/components/SudokuGrid';
+import ThemeToggle from '@/components/ThemeToggle';
 import { SudokuSolver } from '@/lib/sudokuSolver';
 import { SudokuGrid, PossibleValuesGrid, ConflictsGrid } from '@/types/sudoku';
+import {
+  savePuzzleState,
+  loadPuzzleState,
+  clearPuzzleState,
+  savePersonalBest,
+  getPersonalBest,
+  formatTime,
+} from '@/lib/storage';
 
 export default function Home() {
   const [grid, setGrid] = useState<SudokuGrid>(() =>
@@ -25,6 +35,22 @@ export default function Home() {
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Timer state
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [currentDifficulty, setCurrentDifficulty] = useState('sample');
+  const [personalBest, setPersonalBest] = useState<number | undefined>(undefined);
+  const [showNewRecord, setShowNewRecord] = useState(false);
+
+  // Keyboard navigation state
+  const [selectedCell, setSelectedCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
+
+  // Refs for puzzle completion tracking
+  const wasCompleteRef = useRef(false);
 
   // Update possible values whenever the grid changes
   useEffect(() => {
@@ -48,6 +74,162 @@ export default function Home() {
       setMessage(''); // Clear the invalid state message when grid becomes valid again
     }
   }, [grid, showPossibleValues, message]);
+
+  // Timer useEffect - increments every second
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isTimerRunning) {
+      intervalId = setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(intervalId);
+  }, [isTimerRunning]);
+
+  // Auto-save puzzle state to localStorage
+  useEffect(() => {
+    if (!SudokuSolver.isGridComplete(grid)) {
+      savePuzzleState({
+        grid,
+        initialGrid,
+        difficulty: currentDifficulty,
+        elapsedTime,
+        timestamp: Date.now(),
+        isCustomMode,
+      });
+    } else {
+      // Clear auto-save when puzzle is complete
+      clearPuzzleState();
+    }
+  }, [grid, initialGrid, currentDifficulty, elapsedTime, isCustomMode]);
+
+  // Restore puzzle on mount
+  useEffect(() => {
+    const savedState = loadPuzzleState();
+    if (savedState && !SudokuSolver.isGridComplete(savedState.grid)) {
+      setGrid(savedState.grid);
+      setInitialGrid(savedState.initialGrid);
+      setCurrentDifficulty(savedState.difficulty);
+      setElapsedTime(savedState.elapsedTime);
+      setIsCustomMode(savedState.isCustomMode);
+      setMessage('📂 Resumed your previous puzzle!');
+    }
+    
+    // Load personal best for current difficulty
+    const best = getPersonalBest(currentDifficulty);
+    setPersonalBest(best);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
+
+  // Check for puzzle completion and trigger confetti
+  useEffect(() => {
+    const isComplete = SudokuSolver.isGridComplete(grid);
+    
+    if (isComplete && !wasCompleteRef.current && isValidState) {
+      // Puzzle just became complete
+      wasCompleteRef.current = true;
+      setIsTimerRunning(false);
+      
+      // Confetti celebration!
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+      
+      // Check and save personal best
+      const best = getPersonalBest(currentDifficulty);
+      if (!best || elapsedTime < best) {
+        savePersonalBest(currentDifficulty, elapsedTime);
+        setPersonalBest(elapsedTime);
+        setShowNewRecord(true);
+        setMessage(`🎉 Puzzle solved in ${formatTime(elapsedTime)}! NEW PERSONAL BEST! 🏆`);
+        setTimeout(() => setShowNewRecord(false), 5000);
+      } else {
+        setMessage(`🎉 Puzzle solved in ${formatTime(elapsedTime)}! Personal best: ${formatTime(best)}`);
+      }
+    } else if (!isComplete && wasCompleteRef.current) {
+      // Puzzle was modified after completion
+      wasCompleteRef.current = false;
+    }
+  }, [grid, isValidState, elapsedTime, currentDifficulty]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedCell) return;
+      
+      const { row, col } = selectedCell;
+      
+      // Number keys 1-9
+      if (e.key >= '1' && e.key <= '9') {
+        if (!isCustomMode && initialGrid[row][col] !== null) return; // Can't edit given cells
+        const num = parseInt(e.key);
+        handleCellChange(row, col, num);
+        return;
+      }
+      
+      // Delete or Backspace to clear
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (!isCustomMode && initialGrid[row][col] !== null) return;
+        handleCellChange(row, col, null);
+        return;
+      }
+      
+      // Arrow keys for navigation
+      let newRow = row;
+      let newCol = col;
+      
+      switch (e.key) {
+        case 'ArrowUp':
+          e.preventDefault();
+          newRow = Math.max(0, row - 1);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          newRow = Math.min(8, row + 1);
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          newCol = Math.max(0, col - 1);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          newCol = Math.min(8, col + 1);
+          break;
+        case 'Escape':
+          setSelectedCell(null);
+          // Blur the currently focused element
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+          }
+          return;
+        default:
+          return;
+      }
+      
+      if (newRow !== row || newCol !== col) {
+        setSelectedCell({ row: newRow, col: newCol });
+        // Blur the currently focused input to prevent double highlighting
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedCell, isCustomMode, initialGrid]);
+
+  const handleCellSelect = useCallback((row: number, col: number) => {
+    // Toggle selection - clicking the same cell deselects it
+    setSelectedCell((prev) => {
+      if (prev && prev.row === row && prev.col === col) {
+        return null; // Deselect if clicking the same cell
+      }
+      return { row, col };
+    });
+  }, []);
 
   const handleCellChange = (row: number, col: number, value: number | null) => {
     const newGrid = SudokuSolver.cloneGrid(grid);
@@ -97,6 +279,16 @@ export default function Home() {
     }, 100);
   };
 
+  const resetPuzzleTimer = (difficulty: string) => {
+    setElapsedTime(0);
+    setIsTimerRunning(true);
+    setCurrentDifficulty(difficulty);
+    wasCompleteRef.current = false;
+    setShowNewRecord(false);
+    const best = getPersonalBest(difficulty);
+    setPersonalBest(best);
+  };
+
   const createBlankPuzzle = () => {
     const blankGrid = Array(9)
       .fill(null)
@@ -106,6 +298,7 @@ export default function Home() {
     setPossibleValues(SudokuSolver.getAllPossibleValues(blankGrid));
     setConflicts(SudokuSolver.getConflictingCells(blankGrid));
     setIsCustomMode(true);
+    resetPuzzleTimer('custom');
     setMessage('Enter your own puzzle! All cells are now editable.');
   };
 
@@ -151,6 +344,7 @@ export default function Home() {
       setInitialGrid(blankGrid);
       setPossibleValues(SudokuSolver.getAllPossibleValues(blankGrid));
       setConflicts(SudokuSolver.getConflictingCells(blankGrid));
+      resetPuzzleTimer('custom');
       setMessage('All entries cleared. Start fresh!');
     } else {
       // In normal mode, clear user entries but keep initial puzzle
@@ -158,6 +352,7 @@ export default function Home() {
       setGrid(clearedGrid);
       setPossibleValues(SudokuSolver.getAllPossibleValues(clearedGrid));
       setConflicts(SudokuSolver.getConflictingCells(clearedGrid));
+      resetPuzzleTimer(currentDifficulty);
       setMessage('');
     }
   };
@@ -234,6 +429,7 @@ export default function Home() {
         setPossibleValues(SudokuSolver.getAllPossibleValues(newPuzzle));
         setConflicts(SudokuSolver.getConflictingCells(newPuzzle));
         setIsCustomMode(false);
+        resetPuzzleTimer(difficulty);
 
         const filledCells = SudokuSolver.countFilledCells(newPuzzle);
         setMessage(
@@ -251,6 +447,7 @@ export default function Home() {
         setInitialGrid(SudokuSolver.cloneGrid(samplePuzzle));
         setPossibleValues(SudokuSolver.getAllPossibleValues(samplePuzzle));
         setConflicts(SudokuSolver.getConflictingCells(samplePuzzle));
+        resetPuzzleTimer('sample');
       }
 
       setIsGenerating(false);
@@ -258,17 +455,49 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-8 transition-colors duration-200">
       <div className="container mx-auto px-4">
+        <div className="flex justify-end mb-4">
+          <ThemeToggle />
+        </div>
+        
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             Sudoku Solver
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Enter your puzzle and click solve, or use the sample puzzle
           </p>
+          
+          {/* Timer and Personal Best Display */}
+          <div className="mt-4 flex flex-wrap justify-center gap-4 items-center">
+            <div className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+              <div className="text-sm text-gray-500 dark:text-gray-400">Time</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                {formatTime(elapsedTime)}
+              </div>
+            </div>
+            
+            {personalBest !== undefined && (
+              <div className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-500 dark:text-gray-400">Personal Best</div>
+                <div className={`text-2xl font-bold font-mono ${
+                  showNewRecord 
+                    ? 'text-green-600 dark:text-green-400 animate-pulse' 
+                    : 'text-purple-600 dark:text-purple-400'
+                }`}>
+                  {formatTime(personalBest)} {showNewRecord && '🏆'}
+                </div>
+              </div>
+            )}
+            
+            <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs text-gray-600 dark:text-gray-400">
+              💡 Use arrow keys to navigate • Number keys to fill • Backspace to clear
+            </div>
+          </div>
+          
           {isCustomMode && (
-            <div className="mt-2 px-4 py-2 bg-indigo-100 border border-indigo-300 rounded-lg text-indigo-800 font-medium">
+            <div className="mt-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-300 dark:border-indigo-700 rounded-lg text-indigo-800 dark:text-indigo-300 font-medium">
               🎨 Custom Puzzle Mode - All cells are editable
             </div>
           )}
@@ -283,6 +512,8 @@ export default function Home() {
             showPossibleValues={showPossibleValues}
             isCustomMode={isCustomMode}
             onCellChange={handleCellChange}
+            selectedCell={selectedCell}
+            onCellSelect={handleCellSelect}
           />
 
           <div className="flex flex-wrap justify-center gap-3">
@@ -300,7 +531,7 @@ export default function Home() {
 
             <button
               onClick={validatePuzzle}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+              className="px-6 py-2 bg-green-600 dark:bg-green-700 text-white rounded-lg font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
             >
               Validate
             </button>
@@ -310,10 +541,10 @@ export default function Home() {
               disabled={isCustomMode}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 isCustomMode
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   : showPossibleValues
-                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                    : 'bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300'
+                    ? 'bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-white'
+                    : 'bg-purple-100 dark:bg-purple-900/40 hover:bg-purple-200 dark:hover:bg-purple-800/60 text-purple-800 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
               }`}
             >
               {showPossibleValues ? 'Hide Hints' : 'Show Hints'}
@@ -324,8 +555,8 @@ export default function Home() {
               disabled={!showPossibleValues || isCustomMode}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 showPossibleValues && !isCustomMode
-                  ? 'bg-green-600 hover:bg-green-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               }`}
             >
               Fill Obvious
@@ -375,10 +606,10 @@ export default function Home() {
                 message.includes('Invalid') ||
                 message.includes('Cannot solve') ||
                 message.includes('No solution')
-                  ? 'text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2'
+                  ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2'
                   : message.includes('valid') || message.includes('solved')
-                    ? 'text-green-600 bg-green-50 border border-green-200 rounded-lg px-4 py-2'
-                    : 'text-blue-600 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2'
+                    ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/40 border border-green-200 dark:border-green-700 rounded-lg px-4 py-2'
+                    : 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700 rounded-lg px-4 py-2'
               }`}
             >
               {message}
@@ -386,7 +617,7 @@ export default function Home() {
           )}
 
           {!isValidState && !message.includes('Invalid puzzle state') && (
-            <div className="text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-lg font-medium">
+            <div className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-700 rounded-lg px-4 py-2 text-lg font-medium">
               ⚠️ Invalid puzzle state detected! Red cells show conflicts.
             </div>
           )}
