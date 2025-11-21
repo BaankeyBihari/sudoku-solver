@@ -151,12 +151,12 @@ yarn test --testTimeout=30000
 
 Efficiently navigate and solve puzzles using keyboard controls:
 
-| Shortcut | Action |
-|----------|--------|
-| **Arrow Keys** (↑↓←→) | Navigate between cells |
-| **1-9** | Enter number in selected cell |
-| **Backspace/Delete** | Clear selected cell |
-| **Escape** | Deselect current cell |
+| Shortcut              | Action                        |
+| --------------------- | ----------------------------- |
+| **Arrow Keys** (↑↓←→) | Navigate between cells        |
+| **1-9**               | Enter number in selected cell |
+| **Backspace/Delete**  | Clear selected cell           |
+| **Escape**            | Deselect current cell         |
 
 > **Tip:** Click any cell to select it, then use keyboard shortcuts for faster solving!
 
@@ -326,15 +326,18 @@ services:
 ### Dependencies
 
 **Core Libraries:**
+
 - `next` - React framework with server components
 - `react` & `react-dom` - UI library
 - `typescript` - Type-safe development
 - `tailwindcss` - Utility-first CSS
 
 **UI Enhancements:**
+
 - `canvas-confetti` - Celebration animations on puzzle completion
 
 **Development Tools:**
+
 - `jest` & `@testing-library/react` - Testing framework
 - `eslint` & `prettier` - Code linting and formatting
 - `husky` & `lint-staged` - Pre-commit hooks

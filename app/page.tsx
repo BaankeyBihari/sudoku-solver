@@ -40,7 +40,9 @@ export default function Home() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [currentDifficulty, setCurrentDifficulty] = useState('sample');
-  const [personalBest, setPersonalBest] = useState<number | undefined>(undefined);
+  const [personalBest, setPersonalBest] = useState<number | undefined>(
+    undefined
+  );
   const [showNewRecord, setShowNewRecord] = useState(false);
 
   // Keyboard navigation state
@@ -80,7 +82,7 @@ export default function Home() {
     let intervalId: NodeJS.Timeout;
     if (isTimerRunning) {
       intervalId = setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
+        setElapsedTime(prev => prev + 1);
       }, 1000);
     }
     return () => clearInterval(intervalId);
@@ -114,7 +116,7 @@ export default function Home() {
       setIsCustomMode(savedState.isCustomMode);
       setMessage('📂 Resumed your previous puzzle!');
     }
-    
+
     // Load personal best for current difficulty
     const best = getPersonalBest(currentDifficulty);
     setPersonalBest(best);
@@ -124,29 +126,33 @@ export default function Home() {
   // Check for puzzle completion and trigger confetti
   useEffect(() => {
     const isComplete = SudokuSolver.isGridComplete(grid);
-    
+
     if (isComplete && !wasCompleteRef.current && isValidState) {
       // Puzzle just became complete
       wasCompleteRef.current = true;
       setIsTimerRunning(false);
-      
+
       // Confetti celebration!
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
-      
+
       // Check and save personal best
       const best = getPersonalBest(currentDifficulty);
       if (!best || elapsedTime < best) {
         savePersonalBest(currentDifficulty, elapsedTime);
         setPersonalBest(elapsedTime);
         setShowNewRecord(true);
-        setMessage(`🎉 Puzzle solved in ${formatTime(elapsedTime)}! NEW PERSONAL BEST! 🏆`);
+        setMessage(
+          `🎉 Puzzle solved in ${formatTime(elapsedTime)}! NEW PERSONAL BEST! 🏆`
+        );
         setTimeout(() => setShowNewRecord(false), 5000);
       } else {
-        setMessage(`🎉 Puzzle solved in ${formatTime(elapsedTime)}! Personal best: ${formatTime(best)}`);
+        setMessage(
+          `🎉 Puzzle solved in ${formatTime(elapsedTime)}! Personal best: ${formatTime(best)}`
+        );
       }
     } else if (!isComplete && wasCompleteRef.current) {
       // Puzzle was modified after completion
@@ -158,9 +164,9 @@ export default function Home() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedCell) return;
-      
+
       const { row, col } = selectedCell;
-      
+
       // Number keys 1-9
       if (e.key >= '1' && e.key <= '9') {
         if (!isCustomMode && initialGrid[row][col] !== null) return; // Can't edit given cells
@@ -168,18 +174,18 @@ export default function Home() {
         handleCellChange(row, col, num);
         return;
       }
-      
+
       // Delete or Backspace to clear
       if (e.key === 'Delete' || e.key === 'Backspace') {
         if (!isCustomMode && initialGrid[row][col] !== null) return;
         handleCellChange(row, col, null);
         return;
       }
-      
+
       // Arrow keys for navigation
       let newRow = row;
       let newCol = col;
-      
+
       switch (e.key) {
         case 'ArrowUp':
           e.preventDefault();
@@ -207,7 +213,7 @@ export default function Home() {
         default:
           return;
       }
-      
+
       if (newRow !== row || newCol !== col) {
         setSelectedCell({ row: newRow, col: newCol });
         // Blur the currently focused input to prevent double highlighting
@@ -216,14 +222,14 @@ export default function Home() {
         }
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCell, isCustomMode, initialGrid]);
 
   const handleCellSelect = useCallback((row: number, col: number) => {
     // Toggle selection - clicking the same cell deselects it
-    setSelectedCell((prev) => {
+    setSelectedCell(prev => {
       if (prev && prev.row === row && prev.col === col) {
         return null; // Deselect if clicking the same cell
       }
@@ -460,7 +466,7 @@ export default function Home() {
         <div className="flex justify-end mb-4">
           <ThemeToggle />
         </div>
-        
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             Sudoku Solver
@@ -468,34 +474,41 @@ export default function Home() {
           <p className="text-gray-600 dark:text-gray-300">
             Enter your puzzle and click solve, or use the sample puzzle
           </p>
-          
+
           {/* Timer and Personal Best Display */}
           <div className="mt-4 flex flex-wrap justify-center gap-4 items-center">
             <div className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400">Time</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Time
+              </div>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono">
                 {formatTime(elapsedTime)}
               </div>
             </div>
-            
+
             {personalBest !== undefined && (
               <div className="px-6 py-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                <div className="text-sm text-gray-500 dark:text-gray-400">Personal Best</div>
-                <div className={`text-2xl font-bold font-mono ${
-                  showNewRecord 
-                    ? 'text-green-600 dark:text-green-400 animate-pulse' 
-                    : 'text-purple-600 dark:text-purple-400'
-                }`}>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Personal Best
+                </div>
+                <div
+                  className={`text-2xl font-bold font-mono ${
+                    showNewRecord
+                      ? 'text-green-600 dark:text-green-400 animate-pulse'
+                      : 'text-purple-600 dark:text-purple-400'
+                  }`}
+                >
                   {formatTime(personalBest)} {showNewRecord && '🏆'}
                 </div>
               </div>
             )}
-            
+
             <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs text-gray-600 dark:text-gray-400">
-              💡 Use arrow keys to navigate • Number keys to fill • Backspace to clear
+              💡 Use arrow keys to navigate • Number keys to fill • Backspace to
+              clear
             </div>
           </div>
-          
+
           {isCustomMode && (
             <div className="mt-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-300 dark:border-indigo-700 rounded-lg text-indigo-800 dark:text-indigo-300 font-medium">
               🎨 Custom Puzzle Mode - All cells are editable

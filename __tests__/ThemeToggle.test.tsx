@@ -29,7 +29,7 @@ describe('ThemeToggle Component', () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
       const button = screen.getByRole('button');
-      
+
       expect(button).toHaveAttribute('aria-label', 'Toggle theme');
       expect(button).toHaveAttribute('title');
     });
@@ -37,7 +37,7 @@ describe('ThemeToggle Component', () => {
     test('renders moon icon in light mode', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       const { container } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const svg = container.querySelector('svg');
         expect(svg).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe('ThemeToggle Component', () => {
     test('renders sun icon in dark mode', async () => {
       (getTheme as jest.Mock).mockReturnValue('dark');
       const { container } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const svg = container.querySelector('svg');
         expect(svg).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe('ThemeToggle Component', () => {
     test('shows placeholder before mounting', () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       const { container } = render(<ThemeToggle />);
-      
+
       // Should render a button even before mount
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
@@ -68,38 +68,38 @@ describe('ThemeToggle Component', () => {
     test('toggles from light to dark theme on click', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         fireEvent.click(button);
       });
-      
+
       expect(setTheme).toHaveBeenCalledWith('dark');
     });
 
     test('toggles from dark to light theme on click', async () => {
       (getTheme as jest.Mock).mockReturnValue('dark');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         fireEvent.click(button);
       });
-      
+
       expect(setTheme).toHaveBeenCalledWith('light');
     });
 
     test('calls getTheme on component mount', () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       expect(getTheme).toHaveBeenCalled();
     });
 
     test('updates button title when theme changes', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       const { rerender } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         expect(button).toHaveAttribute('title', 'Switch to dark mode');
@@ -108,7 +108,7 @@ describe('ThemeToggle Component', () => {
       // Toggle to dark
       (getTheme as jest.Mock).mockReturnValue('dark');
       rerender(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         fireEvent.click(button);
@@ -120,7 +120,7 @@ describe('ThemeToggle Component', () => {
     test('loads theme from storage on mount', async () => {
       (getTheme as jest.Mock).mockReturnValue('dark');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         expect(getTheme).toHaveBeenCalled();
       });
@@ -129,12 +129,12 @@ describe('ThemeToggle Component', () => {
     test('persists theme change to storage', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         fireEvent.click(button);
       });
-      
+
       expect(setTheme).toHaveBeenCalledWith('dark');
     });
   });
@@ -143,7 +143,7 @@ describe('ThemeToggle Component', () => {
     test('has correct CSS classes for styling', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         expect(button).toHaveClass('p-2');
@@ -154,7 +154,7 @@ describe('ThemeToggle Component', () => {
     test('shows moon icon with gray color in light mode', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       const { container } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const svg = container.querySelector('svg');
         expect(svg).toHaveClass('text-gray-800');
@@ -164,7 +164,7 @@ describe('ThemeToggle Component', () => {
     test('shows sun icon with yellow color in dark mode', async () => {
       (getTheme as jest.Mock).mockReturnValue('dark');
       const { container } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const svg = container.querySelector('svg');
         expect(svg).toHaveClass('text-yellow-400');
@@ -176,14 +176,14 @@ describe('ThemeToggle Component', () => {
     test('handles rapid toggle clicks', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         fireEvent.click(button);
         fireEvent.click(button);
         fireEvent.click(button);
       });
-      
+
       // Should have been called for each click
       expect(setTheme).toHaveBeenCalled();
     });
@@ -191,7 +191,7 @@ describe('ThemeToggle Component', () => {
     test('handles missing theme gracefully', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       const { container } = render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         expect(container.firstChild).toBeInTheDocument();
       });
@@ -202,7 +202,7 @@ describe('ThemeToggle Component', () => {
     test('button is keyboard accessible', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         expect(button).not.toHaveAttribute('disabled');
@@ -212,7 +212,7 @@ describe('ThemeToggle Component', () => {
     test('has descriptive aria-label', () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('aria-label', 'Toggle theme');
     });
@@ -220,7 +220,7 @@ describe('ThemeToggle Component', () => {
     test('has helpful title text', async () => {
       (getTheme as jest.Mock).mockReturnValue('light');
       render(<ThemeToggle />);
-      
+
       await waitFor(() => {
         const button = screen.getByRole('button');
         expect(button).toHaveAttribute('title');

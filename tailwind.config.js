@@ -9,11 +9,11 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateColumns: {
-        '9': 'repeat(9, minmax(0, 1fr))',
+        9: 'repeat(9, minmax(0, 1fr))',
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
       },
       keyframes: {
         shake: {
@@ -38,4 +38,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};
