@@ -1,11 +1,4 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Run prettier on staged files
-npx prettier --write --ignore-unknown $(git diff --cached --name-only --diff-filter=ACM)
-
-# Run type check
+# Lint and test staged files before commit
+npx lint-staged
 yarn type-check
-
-# Run tests (optional - can be removed if too slow)
 yarn test --passWithNoTests
