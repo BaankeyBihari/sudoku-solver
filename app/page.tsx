@@ -160,6 +160,33 @@ export default function Home() {
     }
   }, [grid, isValidState, elapsedTime, currentDifficulty]);
 
+  const handleCellSelect = useCallback((row: number, col: number) => {
+    // Toggle selection - clicking the same cell deselects it
+    setSelectedCell(prev => {
+      if (prev && prev.row === row && prev.col === col) {
+        return null; // Deselect if clicking the same cell
+      }
+      return { row, col };
+    });
+  }, []);
+
+  const handleCellChange = useCallback(
+    (row: number, col: number, value: number | null) => {
+      const newGrid = SudokuSolver.cloneGrid(grid);
+      newGrid[row][col] = value;
+      setGrid(newGrid);
+      setMessage('');
+
+      // If in custom mode, also update the initial grid to track user's problem
+      if (isCustomMode) {
+        const newInitialGrid = SudokuSolver.cloneGrid(initialGrid);
+        newInitialGrid[row][col] = value;
+        setInitialGrid(newInitialGrid);
+      }
+    },
+    [grid, isCustomMode, initialGrid]
+  );
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -225,31 +252,7 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedCell, isCustomMode, initialGrid]);
-
-  const handleCellSelect = useCallback((row: number, col: number) => {
-    // Toggle selection - clicking the same cell deselects it
-    setSelectedCell(prev => {
-      if (prev && prev.row === row && prev.col === col) {
-        return null; // Deselect if clicking the same cell
-      }
-      return { row, col };
-    });
-  }, []);
-
-  const handleCellChange = (row: number, col: number, value: number | null) => {
-    const newGrid = SudokuSolver.cloneGrid(grid);
-    newGrid[row][col] = value;
-    setGrid(newGrid);
-    setMessage('');
-
-    // If in custom mode, also update the initial grid to track user's problem
-    if (isCustomMode) {
-      const newInitialGrid = SudokuSolver.cloneGrid(initialGrid);
-      newInitialGrid[row][col] = value;
-      setInitialGrid(newInitialGrid);
-    }
-  };
+  }, [selectedCell, isCustomMode, initialGrid, handleCellChange]);
 
   const solvePuzzle = async () => {
     if (isSolving) return;
